@@ -41,7 +41,10 @@ function sanitizeXml(xml) {
     .replace(/^﻿/, "")
     // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
-    .replace(/<image>[\s\S]*?<\/image>/gi, "");
+    .replace(/<image>[\s\S]*?<\/image>/gi, "")
+    // Bare "&" (e.g. "M&M" in a title, unescaped in some feeds like Jansatta)
+    // makes the whole document invalid; escape any & that doesn't start an entity.
+    .replace(/&(?!(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);)/g, "&amp;");
 }
 
 export async function fetchFeed(url) {
