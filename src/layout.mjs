@@ -3,6 +3,7 @@
 //
 //   _sources         written by the PC (local sync), read by the collector
 //   _health          written by the collector, read by the PC
+//   _runs            one row per collector run (appended), read by the PC
 //   YYYY-MM-DD tabs  one per publish date (IST), append-only, written by the
 //                    collector; the PC deletes them after archiving (~60 days)
 
@@ -18,6 +19,14 @@ export const HEALTH_TAB = "_health";
 export const HEALTH_COLUMNS = [
   "source_id", "last_checked_at", "status", "items_in_feed", "new_articles",
   "last_success_at", "last_failure_at", "last_error",
+];
+
+// One row per collector run (GitHub or PC), for the app's run logs. The PC
+// copies rows into its archive and trims old ones from the sheet.
+export const RUNS_TAB = "_runs";
+export const RUN_COLUMNS = [
+  "run_id", "started_at", "finished_at", "trigger", "status", "duration_ms", "sources", "failed",
+  "new_articles", "duplicates", "skipped_old", "tabs", "details", "url", "error",
 ];
 
 export const ARTICLE_COLUMNS = [
