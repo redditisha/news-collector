@@ -100,9 +100,17 @@ function extractImage(item) {
  * URL, then guid, then a title hash.
  */
 export function normalizeItem(item, source) {
-  const title = (item.title || "").trim();
+  let title = (item.title || "").trim();
   const link = (item.link || item.guid || "").trim();
   if (!title || !link) return null;
+  // Google News feeds stand in for publishers that block data-centre IPs
+  // (e.g. Indian Express): titles end in " - Publisher" and the summary just
+  // repeats the headline, so trim the one and drop the other.
+  const viaGoogleNews = /^https?:\/\/news\.google\.com\//.test(link);
+  if (viaGoogleNews) {
+    title = title.replace(/\s+-\s+[^-]{2,60}$/, "").trim() || title;
+    item = { ...item, contentSnippet: "", summary: "", content: "" };
+  }
 
   const url = normalizeUrl(link);
   const guid = (item.guid || "").trim();
