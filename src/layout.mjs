@@ -5,7 +5,10 @@
 //   _health          written by the collector, read by the PC
 //   _runs            one row per collector run (appended), read by the PC
 //   YYYY-MM-DD tabs  one per publish date (IST), append-only, written by the
-//                    collector; the PC deletes them after archiving (~60 days)
+//                    collector; the PC fills in title_en (its translation)
+//                    and deletes tabs after archiving (SHEET_RETENTION_DAYS)
+//   _stories, _watchlists, _pc_status
+//                    published by the PC for the hosted dashboard
 
 export const TZ = "Asia/Kolkata";
 
@@ -31,7 +34,9 @@ export const RUN_COLUMNS = [
 
 export const ARTICLE_COLUMNS = [
   "id", "published_at", "fetched_at", "source_id", "source_name", "language",
-  "title", "url", "description", "author", "image_url", "guid",
+  // title_en: left blank here; the PC (or the dashboard's Translate button)
+  // writes the English headline. Was "author" in tabs before Oct 2026.
+  "title", "url", "description", "title_en", "image_url", "guid",
   "category_group", "category", "topic",
 ];
 

@@ -126,7 +126,6 @@ export function normalizeItem(item, source) {
     const shifted = publishedMs - IST_OFFSET_MS;
     publishedMs = shifted <= now + FUTURE_TOLERANCE_MS ? shifted : now;
   }
-  const author = item.creator || item.author || item["dc:creator"] || "";
 
   return {
     id: sha1(`${source.id}|${dedupKey}`).slice(0, 16),
@@ -137,7 +136,7 @@ export function normalizeItem(item, source) {
     title: title.slice(0, 1000),
     url,
     description: stripHtml(item.contentSnippet || item.summary || item.content),
-    author: typeof author === "string" ? author : "",
+    title_en: "",
     image_url: extractImage(item),
     guid,
     category_group: source.category_group || "",
