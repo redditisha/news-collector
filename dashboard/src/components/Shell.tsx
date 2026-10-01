@@ -2,6 +2,7 @@ import { ensureData } from "@/lib/sheetdata";
 import { HOSTED } from "@/lib/mode";
 import { Sidebar, type SidebarData } from "./Sidebar";
 import { LanguageToggle } from "./LanguageToggle";
+import { SheetBanner } from "./SheetBanner";
 import { getPipelineStatus } from "@/lib/pipeline";
 import { countArticles, listWatchlists, SPIKE_SOURCES } from "@/lib/queries";
 import { db } from "@/lib/db";
@@ -44,6 +45,7 @@ export async function Shell({
       <Sidebar data={data} />
       <main className="mx-auto max-w-6xl px-4 py-6 lg:ml-60 lg:max-w-none lg:px-8">
         <div className="mx-auto max-w-5xl">
+          {HOSTED ? <SheetBanner /> : null}
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0">
               <h1 className="text-2xl font-bold text-ink">{title}</h1>

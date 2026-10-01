@@ -35,7 +35,7 @@ const ARTICLE_COLUMNS = [
   "category_group", "category", "topic",
 ];
 
-type TabInfo = { sheetId: number; rowCount: number };
+type TabInfo = { sheetId: number; rowCount: number; columnCount: number };
 interface Cache {
   tabs?: { at: number; map: Map<string, TabInfo> };
   metaAt?: number;
@@ -87,9 +87,16 @@ async function read(ranges: string[]): Promise<string[][][]> {
 async function tabs(): Promise<Map<string, TabInfo>> {
   const c = cache();
   if (c.tabs && Date.now() - c.tabs.at < META_TTL_MS) return c.tabs.map;
-  const d = await call("GET", "?fields=sheets.properties(sheetId,title,gridProperties.rowCount)");
+  const d = await call("GET", "?fields=sheets.properties(sheetId,title,gridProperties(rowCount,columnCount))");
   const map = new Map<string, TabInfo>(
-    (d.sheets || []).map((s: any) => [s.properties.title, { sheetId: s.properties.sheetId, rowCount: s.properties.gridProperties?.rowCount ?? 0 }])
+    (d.sheets || []).map((s: any) => [
+      s.properties.title,
+      {
+        sheetId: s.properties.sheetId,
+        rowCount: s.properties.gridProperties?.rowCount ?? 0,
+        columnCount: s.properties.gridProperties?.columnCount ?? 26,
+      },
+    ])
   );
   c.tabs = { at: Date.now(), map };
   return map;
@@ -331,6 +338,51 @@ export function hostedFilters<T extends Partial<Filters>>(f: T, fallbackRange = 
   if (!f.range) return { ...f, range: fallbackRange };
   if (f.range === "all" || f.range === "30d") return { ...f, range: "7d" };
   return f;
+}
+
+// ---------------------------------------------------------------------------
+// Sheet capacity: how full it is, and how much of it the PC has copied
+// ---------------------------------------------------------------------------
+
+/** Google Sheets' limit per spreadsheet. */
+export const SHEET_CELL_LIMIT = 10_000_000;
+/** Show the "sync needed" banner from this share of the limit. */
+export const SHEET_WARN_AT = Number(process.env.SHEET_WARN_AT || "0.7");
+
+export interface SheetHealth {
+  cells: number;
+  fill: number;           // 0-1 of SHEET_CELL_LIMIT
+  rows: number;           // articles in the day tabs
+  copied: number;         // of those, copied to the PC (as of its last publish)
+  lastPcSync: string | null;
+}
+
+/**
+ * Old day tabs are deleted only after the PC has copied them, so if the PC
+ * isn't synced for weeks the sheet fills up (and collection stops at the
+ * limit). The PC publishes how many rows of each tab it has (_pc_status).
+ */
+export async function sheetHealth(): Promise<SheetHealth | null> {
+  if (!HOSTED) return null;
+  await ensureData();
+  const t = await tabs();
+  let cells = 0;
+  for (const [, info] of t) cells += info.rowCount * info.columnCount;
+  const state = (key: string) =>
+    (db().prepare("select value from app_state where key = ?").get(key) as { value: string } | undefined)?.value ?? null;
+  let synced: Record<string, number> = {};
+  try {
+    synced = JSON.parse(state("pc:synced_rows") || "{}");
+  } catch {}
+  let rows = 0;
+  let copied = 0;
+  for (const [title, info] of t) {
+    if (!DATE_TAB.test(title)) continue;
+    const r = Math.max(info.rowCount - 1, 0);
+    rows += r;
+    copied += Math.min(synced[title] ?? 0, r);
+  }
+  return { cells, fill: cells / SHEET_CELL_LIMIT, rows, copied, lastPcSync: state("pc:last_ok_sync_at") };
 }
 
 // ---------------------------------------------------------------------------

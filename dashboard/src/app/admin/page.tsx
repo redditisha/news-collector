@@ -1,4 +1,4 @@
-import { dayTabs, ensureData, hostedDailyStats } from "@/lib/sheetdata";
+import { dayTabs, ensureData, hostedDailyStats, sheetHealth } from "@/lib/sheetdata";
 import { HOSTED } from "@/lib/mode";
 import { Shell } from "@/components/Shell";
 import { AdminClient } from "@/components/AdminClient";
@@ -99,7 +99,7 @@ function Stat({ label, value, tone }: { label: string; value: string | number; t
 /** Hosted Admin: what the sheet can tell — volume, feed health, the PC's backlog. Read-only. */
 async function HostedAdmin() {
   await ensureData();
-  const [tabs, days, pipeline] = [await dayTabs(), await hostedDailyStats(15), await getPipelineStatus()];
+  const [tabs, days, pipeline, health] = [await dayTabs(), await hostedDailyStats(15), await getPipelineStatus(), await sheetHealth()];
   const d = db();
   const count = (sql: string) => (d.prepare(sql).get() as { n: number }).n;
   const today = tabs.find((t) => t.day === istToday())?.rows ?? 0;
@@ -114,6 +114,12 @@ async function HostedAdmin() {
         <Stat label="In the sheet" value={inSheet.toLocaleString()} />
         <Stat label="Days in the sheet" value={tabs.length} />
         <Stat label="Awaiting translation" value={pipeline.pc?.untranslated?.toLocaleString() ?? "—"} />
+        {health ? (
+          <>
+            <Stat label="Sheet used" value={`${Math.round(health.fill * 100)}%`} tone={health.fill >= 0.7 ? "warn" : undefined} />
+            <Stat label="Copied to PC" value={`${health.rows ? Math.floor((health.copied / health.rows) * 100) : 100}%`} />
+          </>
+        ) : null}
       </section>
       <DailyChart days={days} />
       <PipelinePanel initial={pipeline} />
