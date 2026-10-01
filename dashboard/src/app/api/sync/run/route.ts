@@ -7,16 +7,23 @@ import { getPipelineStatus } from "@/lib/pipeline";
 export const dynamic = "force-dynamic";
 
 /**
- * Admin "Sync now": runs the whole pipeline in the background — collect all
- * feeds into the sheet (same code as the GitHub collector), copy new rows to
- * this PC, translate — and returns immediately. Progress: GET below.
+ * Admin buttons, run in the background (returns immediately; progress: GET):
+ *  - "Sync now" (default): the whole pipeline — collect all feeds into the
+ *    sheet (same code as the GitHub collector), copy new rows to this PC,
+ *    translate, stories, publish.
+ *  - "Sync data" ({ mode: "data" }): just the sheet <-> PC exchange — new
+ *    articles and translations made elsewhere (the cloud translator) come in,
+ *    this PC's translations and stories go out. No collecting or translating,
+ *    so it takes seconds, even while a long translation run is going.
  */
-export async function POST() {
+export async function POST(request: Request) {
+  const body = await request.json().catch(() => ({}));
+  const args = body?.mode === "data" ? ["--data"] : ["--collect"];
   const root = process.cwd();
   const venvPython = path.join(root, "local", ".venv", "Scripts", "pythonw.exe");
   const python = process.env.NEWS_PYTHON || (fs.existsSync(venvPython) ? venvPython : "python");
   try {
-    const child = spawn(python, [path.join(root, "local", "run.py"), "--collect"], {
+    const child = spawn(python, [path.join(root, "local", "run.py"), ...args], {
       cwd: path.join(root, "local"),
       detached: true,
       stdio: "ignore",

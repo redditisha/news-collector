@@ -27,6 +27,7 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
   const [status, setStatus] = useState(initial);
   const [clickedAt, setClickedAt] = useState<number | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [mode, setMode] = useState<"full" | "data">("full");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
@@ -41,13 +42,16 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
     const run = s?.lastSync;
     // Our run is the first one started after the click (it may first wait for
     // a scheduled run that was already going).
+    // A data sync runs alongside other runs, so match it by start time only.
     const ours = run && new Date(run.started_at).getTime() >= since - 2000;
     if (ours && run.status !== "running") {
       setClickedAt(null);
       setMsg(
-        run.status === "ok"
-          ? `✓ Done — ${s.manualCollect?.new_articles ?? 0} collected, ${run.new_articles} new on this PC, ${run.translated} translated.`
-          : `✗ Finished with errors: ${run.error}`
+        run.status !== "ok"
+          ? `✗ Finished with errors: ${run.error}`
+          : mode === "data"
+          ? `✓ Synced — ${run.new_articles} new articles and ${run.translated} translations copied from the sheet.`
+          : `✓ Done — ${s.manualCollect?.new_articles ?? 0} collected, ${run.new_articles} new on this PC, ${run.translated} translated.`
       );
       router.refresh();
       return;
@@ -60,10 +64,15 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
     timer.current = setTimeout(() => poll(since), POLL_MS);
   }
 
-  async function syncNow() {
+  async function syncNow(mode: "full" | "data" = "full") {
     setMsg(null);
     const since = Date.now();
-    const res = await fetch("/api/sync/run", { method: "POST" });
+    setMode(mode);
+    const res = await fetch("/api/sync/run", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ mode }),
+    });
     const d = await res.json().catch(() => ({}));
     if (!d.ok) return setMsg(`✗ ${d.error || "Could not start the sync."}`);
     setClickedAt(since);
@@ -76,7 +85,7 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
   const progress = !running
     ? null
     : !ourRunStarted
-    ? run?.status === "running"
+    ? run?.status === "running" && mode === "full"
       ? "Waiting for the background sync that's already running…"
       : "Starting…"
     : `${STAGE_LABEL[run!.stage || ""] || "Working"}${run!.detail && run!.stage === "translating" ? ` — ${run!.detail}` : ""}…`;
@@ -91,14 +100,24 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
         <h2 className="text-sm font-semibold text-ink">Pipeline</h2>
         <a href="/admin/logs" className="text-xs text-brand hover:underline">Logs of every run →</a>
         {HOSTED ? null : (
+        <>
         <button
-          onClick={syncNow}
+          onClick={() => syncNow("data")}
+          disabled={running}
+          title="Copy new articles and the cloud translator's translations from the sheet to this PC, and publish this PC's translations and stories — no collecting or translating (seconds)"
+          className="rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:opacity-60"
+        >
+          {running && mode === "data" ? "⇅ Syncing…" : "⇅ Sync data"}
+        </button>
+        <button
+          onClick={() => syncNow("full")}
           disabled={running}
           title="Collect all feeds into the sheet, copy new rows to this PC, then translate"
           className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
         >
-          {running ? "⟳ Running…" : "⟳ Sync now"}
+          {running && mode === "full" ? "⟳ Running…" : "⟳ Sync now"}
         </button>
+        </>
         )}
         {progress ? <span className="text-sm text-slate-600">{progress}</span> : null}
         {!progress && msg ? <span className="text-sm text-slate-600">{msg}</span> : null}

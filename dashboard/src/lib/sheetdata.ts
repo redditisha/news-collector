@@ -22,9 +22,9 @@ import { HOSTED, HOSTED_MAX_DAYS } from "@/lib/mode";
  */
 
 const API = "https://sheets.googleapis.com/v4/spreadsheets";
-const META_TTL_MS = 5 * 60_000;
-const RECENT_TAB_TTL_MS = 5 * 60_000;
-const OLD_TAB_TTL_MS = 60 * 60_000;
+const META_TTL_MS = 2 * 60_000;
+const RECENT_TAB_TTL_MS = 2 * 60_000;
+const OLD_TAB_TTL_MS = 15 * 60_000;
 const MAX_CACHED_TABS = 10;
 const TABS_PER_CALL = 3;
 const DATE_TAB = /^\d{4}-\d{2}-\d{2}$/;
