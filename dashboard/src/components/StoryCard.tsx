@@ -59,6 +59,16 @@ export function StoryCard({ story, filters = {} }: { story: Story; filters?: Par
     )
     .all(...params) as { title: string; source: string }[];
   const showTotal = narrowed && story.total_sources && story.total_sources !== story.source_count;
+  // A picture for the story: the newest member article that has one.
+  const image = (
+    db()
+      .prepare(
+        `select a.image_url from article_story x join articles a on a.id = x.article_id
+         where x.story_id = ? and a.image_url is not null and a.image_url <> ''
+         order by coalesce(a.published_at, a.fetched_at) desc limit 1`
+      )
+      .get(story.id) as { image_url: string } | undefined
+  )?.image_url;
 
   return (
     <Link href={`/stories/${story.id}${storyFilterQuery(filters)}`} className="block rounded-xl border border-slate-200 bg-white p-4 transition hover:border-brand">
@@ -75,14 +85,22 @@ export function StoryCard({ story, filters = {} }: { story: Story; filters?: Par
         ) : null}
         <CoverageBar storyId={story.id} />
       </div>
-      <h3 className="font-semibold leading-snug text-ink">{story.title}</h3>
-      <ul className="mt-1.5 space-y-0.5">
-        {members.map((m, i) => (
-          <li key={i} className="truncate text-sm text-slate-500">
-            <span className="font-medium text-slate-600">{m.source}:</span> {m.title}
-          </li>
-        ))}
-      </ul>
+      <div className="flex gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold leading-snug text-ink">{story.title}</h3>
+          <ul className="mt-1.5 space-y-0.5">
+            {members.map((m, i) => (
+              <li key={i} className="truncate text-sm text-slate-500">
+                <span className="font-medium text-slate-600">{m.source}:</span> {m.title}
+              </li>
+            ))}
+          </ul>
+        </div>
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image} alt="" loading="lazy" className="mt-0.5 h-16 w-20 shrink-0 rounded-md bg-slate-100 object-cover sm:h-20 sm:w-28" />
+        ) : null}
+      </div>
     </Link>
   );
 }

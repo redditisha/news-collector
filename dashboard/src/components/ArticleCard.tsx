@@ -76,9 +76,22 @@ export function ArticleCard({
             {HOSTED ? null : <SaveButton articleId={article.id} initiallySaved={!!article.saved} />}
           </span>
         </div>
-        <a href={article.url} target="_blank" rel="noopener noreferrer" className="block">
-          <h3 className="line-clamp-3 font-semibold leading-snug text-ink hover:text-brand">{main}</h3>
-          {secondary ? <p className="mt-0.5 line-clamp-2 text-sm text-slate-400">{secondary}</p> : null}
+        <a href={article.url} target="_blank" rel="noopener noreferrer" className="flex gap-3">
+          <span className="min-w-0 flex-1">
+            <h3 className="line-clamp-3 font-semibold leading-snug text-ink hover:text-brand">{main}</h3>
+            {secondary ? <p className="mt-0.5 line-clamp-2 text-sm text-slate-400">{secondary}</p> : null}
+          </span>
+          {/* Phones: a small thumbnail beside the headline (wider screens show it on the left). */}
+          {article.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={article.image_url}
+              alt=""
+              loading="lazy"
+              className="mt-0.5 h-16 w-20 shrink-0 rounded-md bg-slate-100 object-cover sm:hidden"
+              onError={(e) => (e.currentTarget.style.display = "none")}
+            />
+          ) : null}
         </a>
         {article.description ? <p className="mt-1 line-clamp-2 text-sm text-slate-500">{article.description}</p> : null}
         {folderId !== undefined ? (
