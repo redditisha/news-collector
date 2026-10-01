@@ -1,0 +1,6 @@
+{
+  "installCommand": "npm ci --ignore-scripts",
+  "functions": {
+    "src/app/**/*": { "maxDuration": 60 }
+  }
+}

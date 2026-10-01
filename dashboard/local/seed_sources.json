@@ -1,0 +1,630 @@
+{
+  "categories": [
+    {
+      "group": "India",
+      "name": "Politics",
+      "slug": "politics",
+      "sort": 10
+    },
+    {
+      "group": "Business",
+      "name": "Economy",
+      "slug": "economy",
+      "sort": 20
+    },
+    {
+      "group": "Business",
+      "name": "Business",
+      "slug": "business",
+      "sort": 30
+    },
+    {
+      "group": "India",
+      "name": "Technology",
+      "slug": "technology",
+      "sort": 40
+    },
+    {
+      "group": "India",
+      "name": "Defence",
+      "slug": "defence",
+      "sort": 50
+    },
+    {
+      "group": "India",
+      "name": "Infrastructure",
+      "slug": "infrastructure",
+      "sort": 60
+    },
+    {
+      "group": "India",
+      "name": "Judiciary",
+      "slug": "judiciary",
+      "sort": 70
+    },
+    {
+      "group": "India",
+      "name": "States",
+      "slug": "states",
+      "sort": 80
+    },
+    {
+      "group": "World",
+      "name": "World",
+      "slug": "world",
+      "sort": 90
+    },
+    {
+      "group": "Specialized",
+      "name": "AI",
+      "slug": "ai",
+      "sort": 100
+    },
+    {
+      "group": "Specialized",
+      "name": "Startups",
+      "slug": "startups",
+      "sort": 110
+    },
+    {
+      "group": "Business",
+      "name": "Markets",
+      "slug": "markets",
+      "sort": 120
+    },
+    {
+      "group": "Business",
+      "name": "Global business",
+      "slug": "global-business",
+      "sort": 35
+    },
+    {
+      "group": "Specialized",
+      "name": "Sports",
+      "slug": "sports",
+      "sort": 105
+    }
+  ],
+  "sources": [
+    {
+      "name": "Prajavani (Kannada)",
+      "rss_url": "https://prod-qt-images.s3.amazonaws.com/production/prajavani/feed.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 1
+    },
+    {
+      "name": "OneIndia Kannada — Bengaluru",
+      "rss_url": "https://kannada.oneindia.com/rss/feeds/kannada-bengaluru-fb.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "OneIndia Kannada — Top News",
+      "rss_url": "https://kannada.oneindia.com/rss/kannada-news-fb.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "Deccan Herald",
+      "rss_url": "https://prod-qt-images.s3.amazonaws.com/production/deccanherald/feed.xml",
+      "language": "en",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 1
+    },
+    {
+      "name": "Times of India — Bengaluru",
+      "rss_url": "https://timesofindia.indiatimes.com/rssfeeds/-2128833038.cms",
+      "language": "en",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "The Hindu — Karnataka",
+      "rss_url": "https://www.thehindu.com/news/national/karnataka/feeder/default.rss",
+      "language": "en",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Indian Express — Bangalore",
+      "rss_url": "https://indianexpress.com/section/cities/bangalore/feed/",
+      "language": "en",
+      "country": "IN",
+      "region": "Karnataka",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "The Hindu — National",
+      "rss_url": "https://www.thehindu.com/news/national/feeder/default.rss",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "politics",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 1
+    },
+    {
+      "name": "Times of India — Top Stories",
+      "rss_url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "politics",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "NDTV — India",
+      "rss_url": "https://feeds.feedburner.com/ndtvnews-india-news",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "politics",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 2
+    },
+    {
+      "name": "The Indian Express — India",
+      "rss_url": "https://indianexpress.com/section/india/feed/",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "politics",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Hindustan Times — India",
+      "rss_url": "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "politics",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "The Economic Times — Top Stories",
+      "rss_url": "https://economictimes.indiatimes.com/rssfeedstopstories.cms",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "economy",
+      "secondary_category": "markets",
+      "source_type": "newspaper",
+      "priority": 1
+    },
+    {
+      "name": "Business Standard — Top Stories",
+      "rss_url": "https://www.business-standard.com/rss/home_page_top_stories.rss",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "business",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Mint (Livemint)",
+      "rss_url": "https://www.livemint.com/rss/news",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "business",
+      "secondary_category": "markets",
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Moneycontrol — Latest",
+      "rss_url": "https://www.moneycontrol.com/rss/latestnews.xml",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "markets",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "The Hindu BusinessLine",
+      "rss_url": "https://www.thehindubusinessline.com/feeder/default.rss",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "business",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "TechCrunch",
+      "rss_url": "https://techcrunch.com/feed/",
+      "language": "en",
+      "country": "US",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "technology",
+      "secondary_category": "startups",
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "The Verge",
+      "rss_url": "https://www.theverge.com/rss/index.xml",
+      "language": "en",
+      "country": "US",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "technology",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "Ars Technica",
+      "rss_url": "https://feeds.arstechnica.com/arstechnica/index",
+      "language": "en",
+      "country": "US",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "technology",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 3
+    },
+    {
+      "name": "Inc42",
+      "rss_url": "https://inc42.com/feed/",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "Specialized",
+      "primary_category": "startups",
+      "secondary_category": "technology",
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "YourStory",
+      "rss_url": "https://yourstory.com/feed",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "Specialized",
+      "primary_category": "startups",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 3
+    },
+    {
+      "name": "Gadgets 360",
+      "rss_url": "https://www.gadgets360.com/rss/news",
+      "language": "en",
+      "country": "IN",
+      "region": null,
+      "category_group": "India",
+      "primary_category": "technology",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 3
+    },
+    {
+      "name": "BBC News — World",
+      "rss_url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "language": "en",
+      "country": "GB",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "world",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "The Guardian — World",
+      "rss_url": "https://www.theguardian.com/world/rss",
+      "language": "en",
+      "country": "GB",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "world",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Al Jazeera — All News",
+      "rss_url": "https://www.aljazeera.com/xml/rss/all.xml",
+      "language": "en",
+      "country": "QA",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "world",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 2
+    },
+    {
+      "name": "The New York Times — World",
+      "rss_url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "language": "en",
+      "country": "US",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "world",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "The Economist — International",
+      "rss_url": "https://www.economist.com/international/rss.xml",
+      "language": "en",
+      "country": "GB",
+      "region": null,
+      "category_group": "World",
+      "primary_category": "world",
+      "secondary_category": null,
+      "source_type": "magazine",
+      "priority": 3
+    },
+    {
+      "name": "TV9 Kannada",
+      "rss_url": "https://tv9kannada.com/feed",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "Public TV",
+      "rss_url": "https://publictv.in/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "Asianet Suvarna News",
+      "rss_url": "https://kannada.asianetnews.com/rss",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "News18 Kannada",
+      "rss_url": "https://kannada.news18.com/commonfeeds/v1/kan/rss/latest.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "NewsFirst Kannada",
+      "rss_url": "https://newsfirstlive.com/rss",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 1
+    },
+    {
+      "name": "Vijay Karnataka",
+      "rss_url": "https://vijaykarnataka.com/langapi/sitemap/gstandrssfeed.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 2
+    },
+    {
+      "name": "Vistara News",
+      "rss_url": "https://pnsvistaara.com/feed",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 2
+    },
+    {
+      "name": "Vartha Bharati",
+      "rss_url": "https://www.varthabharati.in/google_feeds.xml",
+      "language": "kn",
+      "country": "IN",
+      "region": "Mangaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Vijayavani",
+      "rss_url": "https://www.vijayavani.net/api/rss",
+      "language": "kn",
+      "country": "IN",
+      "region": "Hubballi",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Pratidhvani News",
+      "rss_url": "https://pratidhvani.com/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 3
+    },
+    {
+      "name": "Kannada Prabha",
+      "rss_url": "https://www.kannadaprabha.com/stories.rss",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Vishwavani TV",
+      "rss_url": "https://vishwavani.news/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 3
+    },
+    {
+      "name": "Sanjevani News",
+      "rss_url": "https://sanjevani.com/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Daijiworld 24x7",
+      "rss_url": "https://www.daijiworld.com/rssfeed/rssfeed.xml",
+      "language": "en",
+      "country": "IN",
+      "region": "Mangaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "portal",
+      "priority": 3
+    },
+    {
+      "name": "Ee Sanje News",
+      "rss_url": "https://eesanje.com/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Hosadigantha Digital",
+      "rss_url": "https://hosadigantha.com/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "newspaper",
+      "priority": 3
+    },
+    {
+      "name": "Century TV Kannada",
+      "rss_url": "https://centurytv.in/feed/",
+      "language": "kn",
+      "country": "IN",
+      "region": "Bengaluru",
+      "category_group": "India",
+      "primary_category": "states",
+      "secondary_category": null,
+      "source_type": "tv",
+      "priority": 3
+    }
+  ]
+}
