@@ -171,6 +171,24 @@ export function PipelinePanel({ initial }: { initial: PipelineStatus }) {
         </Row>
         </>
         )}
+        <Row label="Cloud translator (every 15 min, GitHub)" tone={!status.cloud.lastRunAt ? "muted" : status.cloud.status === "ok" ? "ok" : "bad"}>
+          {status.cloud.lastRunAt ? (
+            <>
+              <span suppressHydrationWarning>{timeAgo(status.cloud.lastRunAt)}</span> · {status.cloud.status}
+              {status.cloud.translated !== null ? ` · ${status.cloud.translated} translated` : ""}
+              {status.cloud.pending ? ` · ${status.cloud.pending.toLocaleString()} still waiting` : ""}
+              {status.cloud.url ? (
+                <>
+                  {" "}·{" "}
+                  <a href={status.cloud.url} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">run</a>
+                </>
+              ) : null}
+              {status.cloud.error ? <div className="text-xs text-red-600">{status.cloud.error}</div> : null}
+            </>
+          ) : (
+            "No runs yet"
+          )}
+        </Row>
       </dl>
     </section>
   );

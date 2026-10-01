@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
   let saved = false;
   if (HOSTED) {
     try {
-      saved = await writeTitleEn(String(body?.tab ?? ""), id, titleEn);
+      const r = await writeTitleEn(String(body?.tab ?? ""), id, titleEn);
+      saved = r.saved;
+      // Someone translated it meanwhile (the cloud translator, usually): first one wins.
+      if (r.existing) titleEn = r.existing;
     } catch {
       saved = false; // still show it
     }

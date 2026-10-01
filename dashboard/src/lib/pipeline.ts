@@ -36,6 +36,8 @@ export interface PipelineStatus {
   github: { configured: boolean; latest: GithubRun | null; lastSuccess: GithubRun | null; error: string | null; repoUrl: string | null };
   manualCollect: { at: string | null; status: string; new_articles: number | null; error: string | null } | null;
   lastSync: LocalRun | null;
+  /** The cloud translator (HelloWorld repo), from its _translate_runs log in the sheet. */
+  cloud: { lastRunAt: string | null; lastOkAt: string | null; status: string | null; translated: number | null; pending: number | null; error: string | null; url: string | null };
   /** Hosted: what the PC last published to the sheet. */
   pc?: { publishedAt: string | null; lastOkSyncAt: string | null; untranslated: number | null };
 }
@@ -129,6 +131,15 @@ export async function getPipelineStatus(): Promise<PipelineStatus> {
     },
     manualCollect: manual ?? null,
     lastSync: lastSync ?? null,
+    cloud: {
+      lastRunAt: getState("cloud:last_run_at"),
+      lastOkAt: getState("cloud:last_ok_at"),
+      status: getState("cloud:last_status"),
+      translated: getState("cloud:last_translated") ? Number(getState("cloud:last_translated")) : null,
+      pending: getState("cloud:last_pending") ? Number(getState("cloud:last_pending")) : null,
+      error: getState("cloud:last_error") || null,
+      url: getState("cloud:last_url") || null,
+    },
     pc: HOSTED
       ? {
           publishedAt: getState("pc:published_at"),

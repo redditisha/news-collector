@@ -118,6 +118,7 @@ async function loadMeta(): Promise<void> {
   const want: [string, string][] = [
     ["_sources", "A2:L"], ["_health", "A2:H"], ["_runs", "A2:O"],
     ["_stories", "A2:G"], ["_watchlists", "A2:F"], ["_pc_status", "A2:B"],
+    ["_translate_runs", "A2:L"],
   ];
   const present = want.filter(([tab]) => t.has(tab));
   const values = await read(present.map(([tab, a1]) => range(tab, a1)));
@@ -191,6 +192,19 @@ async function loadMeta(): Promise<void> {
       "insert into app_state (key, value) values (?, ?) on conflict (key) do update set value = excluded.value"
     );
     for (const r of got.get("_pc_status") ?? []) if (cell(r, 0)) setState.run(`pc:${cell(r, 0)}`, cell(r, 1));
+    // Cloud translator runs (same keys the PC keeps, see local/sync.py).
+    const tr = (got.get("_translate_runs") ?? []).filter((r) => cell(r, 0));
+    const latest = tr[tr.length - 1];
+    if (latest) {
+      setState.run("cloud:last_run_at", cell(latest, 2) || cell(latest, 1));
+      setState.run("cloud:last_status", cell(latest, 3));
+      setState.run("cloud:last_translated", cell(latest, 4));
+      setState.run("cloud:last_pending", cell(latest, 6));
+      setState.run("cloud:last_error", cell(latest, 11));
+      setState.run("cloud:last_url", cell(latest, 10));
+      const ok = tr.filter((r) => cell(r, 3) === "ok").pop();
+      if (ok) setState.run("cloud:last_ok_at", cell(ok, 2) || cell(ok, 1));
+    }
   })();
   c.metaAt = Date.now();
 }
@@ -377,15 +391,22 @@ export async function hostedDailyStats(n: number): Promise<LightDay[]> {
 // Translate button: write one title_en into the sheet
 // ---------------------------------------------------------------------------
 
-/** Write an English headline into the article's row (column J of its day tab). */
-export async function writeTitleEn(tab: string, articleId: string, titleEn: string): Promise<boolean> {
-  if (!DATE_TAB.test(tab)) return false;
-  const [ids] = await read([range(tab, "A1:A")]);
+/**
+ * Write an English headline into the article's row (column J of its day
+ * tab) — only if that cell is still empty: the first translation wins (the
+ * cloud translator and the PC follow the same rule). Returns the
+ * translation already there, if any.
+ */
+export async function writeTitleEn(tab: string, articleId: string, titleEn: string): Promise<{ saved: boolean; existing?: string }> {
+  if (!DATE_TAB.test(tab)) return { saved: false };
+  const [ids, jcol] = await read([range(tab, "A1:A"), range(tab, "J1:J")]);
   const row = ids.findIndex((r) => r[0] === articleId);
-  if (row < 1) return false;
+  if (row < 1) return { saved: false };
+  const existing = jcol[row]?.[0];
+  if (existing) return { saved: false, existing };
   await call("POST", "/values:batchUpdate", {
     valueInputOption: "RAW",
     data: [{ range: range(tab, `J${row + 1}`), values: [[titleEn]] }],
   });
-  return true;
+  return { saved: true };
 }
