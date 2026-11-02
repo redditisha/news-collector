@@ -3,8 +3,8 @@
 A read-only copy of the News Monitor app that runs on Vercel and reads the
 Google Sheet the collector writes, so it works when the PC is off.
 
-It shows the last few weeks the sheet keeps (`SHEET_RETENTION_DAYS` on the
-PC), a week at a time, with the stories, watchlists and translations the PC
+It shows the most recent ~150,000 articles the sheet keeps (`SHEET_KEEP_ROWS`
+on the PC), a week at a time, with the stories, watchlists and translations the PC
 publishes there on every sync. Headlines the PC hasn't translated yet have a
 **Translate** button (Google Translate, one headline at a time), which also
 saves the translation into the sheet.

@@ -344,14 +344,17 @@ export function hostedFilters<T extends Partial<Filters>>(f: T, fallbackRange = 
 // Sheet capacity: how full it is, and how much of it the PC has copied
 // ---------------------------------------------------------------------------
 
-/** Google Sheets' limit per spreadsheet. */
-export const SHEET_CELL_LIMIT = 10_000_000;
-/** Show the "sync needed" banner from this share of the limit. */
-export const SHEET_WARN_AT = Number(process.env.SHEET_WARN_AT || "0.7");
+/**
+ * Articles at which Google stopped all edits ("document too large", 14 Oct
+ * 2026): well before its 10M-cell limit, at 37% of it, so size is what counts.
+ * The PC keeps the sheet at about 2/3 of this (SHEET_KEEP_ROWS, 150,000).
+ */
+export const SHEET_MAX_ARTICLES = 224_533;
+/** Show the "sync needed" banner from this share: normal use stays below it. */
+export const SHEET_WARN_AT = Number(process.env.SHEET_WARN_AT || "0.8");
 
 export interface SheetHealth {
-  cells: number;
-  fill: number;           // 0-1 of SHEET_CELL_LIMIT
+  fill: number;           // 0-1 of SHEET_MAX_ARTICLES
   rows: number;           // articles in the day tabs
   copied: number;         // of those, copied to the PC (as of its last publish)
   lastPcSync: string | null;
@@ -366,8 +369,6 @@ export async function sheetHealth(): Promise<SheetHealth | null> {
   if (!HOSTED) return null;
   await ensureData();
   const t = await tabs();
-  let cells = 0;
-  for (const [, info] of t) cells += info.rowCount * info.columnCount;
   const state = (key: string) =>
     (db().prepare("select value from app_state where key = ?").get(key) as { value: string } | undefined)?.value ?? null;
   let synced: Record<string, number> = {};
@@ -382,7 +383,7 @@ export async function sheetHealth(): Promise<SheetHealth | null> {
     rows += r;
     copied += Math.min(synced[title] ?? 0, r);
   }
-  return { cells, fill: cells / SHEET_CELL_LIMIT, rows, copied, lastPcSync: state("pc:last_ok_sync_at") };
+  return { fill: rows / SHEET_MAX_ARTICLES, rows, copied, lastPcSync: state("pc:last_ok_sync_at") };
 }
 
 // ---------------------------------------------------------------------------

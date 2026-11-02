@@ -2,8 +2,8 @@ import { SHEET_WARN_AT, sheetHealth } from "@/lib/sheetdata";
 import { timeAgo } from "@/lib/utils";
 
 /**
- * Online only: once the Google Sheet passes SHEET_WARN_AT (70%) of its cell
- * limit, a small banner on every page says the PC needs to sync — old days
+ * Online only: once the Google Sheet passes SHEET_WARN_AT (80%) of the size at
+ * which Google stops edits, a small banner on every page says the PC needs to sync — old days
  * are only cleared from the sheet after the PC has copied them, and at 100%
  * collection stops. Shows the PC's last sync and how much is copied.
  */

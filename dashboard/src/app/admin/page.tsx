@@ -116,7 +116,7 @@ async function HostedAdmin() {
         <Stat label="Awaiting translation" value={pipeline.pc?.untranslated?.toLocaleString() ?? "—"} />
         {health ? (
           <>
-            <Stat label="Sheet used" value={`${Math.round(health.fill * 100)}%`} tone={health.fill >= 0.7 ? "warn" : undefined} />
+            <Stat label="Sheet used" value={`${Math.round(health.fill * 100)}%`} tone={health.fill >= 0.8 ? "warn" : undefined} />
             <Stat label="Copied to PC" value={`${health.rows ? Math.floor((health.copied / health.rows) * 100) : 100}%`} />
           </>
         ) : null}
