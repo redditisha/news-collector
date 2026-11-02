@@ -21,6 +21,7 @@ const ALL_SECTIONS = [
   { href: "/", label: "Today", icon: "☀" },
   { href: "/watchlists", label: "Watchlists", icon: "◎" },
   { href: "/stories", label: "Stories", icon: "▦" },
+  { href: "/calendar", label: "Calendar", icon: "▣" },
   { href: "/browse", label: "Browse", icon: "☰" },
   { href: "/saved", label: "Saved", icon: "★" },
   { href: "/muted", label: "Muted", icon: "⊘" },
@@ -119,6 +120,7 @@ export function Sidebar({ data }: { data: SidebarData }) {
         ))}
       </div>
       {link("/stories", "Stories", "▦")}
+      {link("/calendar", "Calendar", "▣")}
       {link("/browse", "Browse", "☰")}
       {HOSTED ? null : link("/saved", "Saved", "★", <Count n={data.savedCount} />)}
       {HOSTED ? null : link("/muted", "Muted", "⊘", <Count n={data.mutedCount} />)}

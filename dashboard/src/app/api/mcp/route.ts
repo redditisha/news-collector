@@ -6,11 +6,13 @@ export const maxDuration = 60;
 
 /**
  * News Monitor MCP server (Model Context Protocol, Streamable HTTP, stateless,
- * JSON responses). Read-only tools over the app's data — online: the Google
- * Sheet; on the PC: the full archive. Add the URL as a custom connector in
- * Claude (claude.ai -> Settings -> Connectors), then use it from the app.
+ * JSON responses). Tools over the app's data — online: the Google Sheet; on
+ * the PC: the full archive. Add the URL as a custom connector in Claude
+ * (claude.ai -> Settings -> Connectors), then use it from the app.
  *
- * Optional MCP_KEY: if set, the URL must carry ?key=<MCP_KEY>.
+ * Everything is read-only except the calendar tools (add/update/delete
+ * events), which work only when MCP_KEY is set (Vercel env) and the URL
+ * carries ?key=<MCP_KEY>. Reading needs no key.
  */
 
 const SERVER = { name: "news-monitor", version: "1.0.0" };
@@ -22,12 +24,13 @@ type RpcRequest = { jsonrpc: "2.0"; id?: string | number | null; method: string;
 const ok = (id: RpcRequest["id"], result: unknown) => ({ jsonrpc: "2.0", id: id ?? null, result });
 const fail = (id: RpcRequest["id"], code: number, message: string) => ({ jsonrpc: "2.0", id: id ?? null, error: { code, message } });
 
-function authorized(request: NextRequest) {
+/** Calendar changes need the key; without MCP_KEY configured, nobody can make them. */
+function canWrite(request: NextRequest) {
   const key = process.env.MCP_KEY;
-  return !key || request.nextUrl.searchParams.get("key") === key;
+  return !!key && request.nextUrl.searchParams.get("key") === key;
 }
 
-async function handle(req: RpcRequest) {
+async function handle(req: RpcRequest, ctx: { canWrite: boolean }) {
   switch (req.method) {
     case "initialize": {
       const asked = req.params?.protocolVersion;
@@ -38,18 +41,26 @@ async function handle(req: RpcRequest) {
         instructions:
           "News Monitor: Indian and world news from 131 outlets in English, Kannada, Hindi, Tamil and Telugu, " +
           "collected every 15 minutes, with English translations and stories (the same event across outlets). " +
-          "Call overview first to see what the data covers. Read-only.",
+          "Call overview first to see what the data covers. There is also a news calendar (festivals, elections, economy, " +
+          "sports, tech, movies...): calendar_events reads it; calendar_add, calendar_update and calendar_delete change it " +
+          "(server key required). Everything else is read-only.",
       });
     }
     case "ping":
       return ok(req.id, {});
     case "tools/list":
       return ok(req.id, {
-        tools: TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema, annotations: { readOnlyHint: true } })),
+        tools: TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema, annotations: { readOnlyHint: !t.writes } })),
       });
     case "tools/call": {
       const tool = TOOLS.find((t) => t.name === req.params?.name);
       if (!tool) return fail(req.id, -32602, `Unknown tool: ${req.params?.name}`);
+      if (tool.writes && !ctx.canWrite) {
+        return ok(req.id, {
+          content: [{ type: "text", text: "Changing the calendar needs the server key: set MCP_KEY in Vercel and add ?key=<MCP_KEY> to this connector's URL." }],
+          isError: true,
+        });
+      }
       try {
         const result = await tool.run(req.params?.arguments ?? {});
         let text = JSON.stringify(result);
@@ -66,7 +77,7 @@ async function handle(req: RpcRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorized(request)) return NextResponse.json(fail(null, -32001, "Unauthorized"), { status: 401 });
+  const ctx = { canWrite: canWrite(request) };
   let body: RpcRequest | RpcRequest[];
   try {
     body = await request.json();
@@ -74,14 +85,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(fail(null, -32700, "Parse error"), { status: 400 });
   }
   const batch = Array.isArray(body) ? body : [body];
-  const replies = (await Promise.all(batch.map(handle))).filter(Boolean);
+  const replies = (await Promise.all(batch.map((r) => handle(r, ctx)))).filter(Boolean);
   if (!replies.length) return new NextResponse(null, { status: 202 });
   return NextResponse.json(Array.isArray(body) ? replies : replies[0]);
 }
 
 /** No server-initiated stream: the server only answers requests. */
-export async function GET(request: NextRequest) {
-  if (!authorized(request)) return new NextResponse("Unauthorized", { status: 401 });
+export async function GET() {
   return new NextResponse("News Monitor MCP server — POST JSON-RPC here (MCP Streamable HTTP).", {
     status: 405,
     headers: { Allow: "POST" },

@@ -19,6 +19,8 @@ import {
 } from "@/lib/queries";
 import { dayTabs, ensureData, hostedDailyStats, hostedFilters, sheetHealth } from "@/lib/sheetdata";
 import type { Article } from "@/lib/types";
+import { addEvent, deleteEvent, getEvent, listEvents, updateEvent } from "@/lib/calendar";
+import { CALENDAR_CATEGORIES, STATE_NAMES } from "@/lib/calendarMeta";
 
 /**
  * Read-only tools for the News Monitor MCP server (/api/mcp). Online they
@@ -32,6 +34,8 @@ export interface Tool {
   name: string;
   description: string;
   inputSchema: Record<string, unknown>;
+  /** Changes data (calendar only); needs the server key. */
+  writes?: boolean;
   run: (args: Args) => Promise<unknown>;
 }
 
@@ -461,6 +465,87 @@ export const TOOLS: Tool[] = [
     },
   },
 ];
+
+
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+const eventProps = {
+  title: { type: "string" },
+  category: { type: "string", enum: CALENDAR_CATEGORIES.map((c) => c.key), description: CALENDAR_CATEGORIES.map((c) => `${c.key} = ${c.label}`).join("; ") },
+  start: { type: "string", description: "First day, YYYY-MM-DD." },
+  end: { type: "string", description: "Last day for multi-day events (inclusive), YYYY-MM-DD; omit for one day." },
+  time: { type: "string", description: "Time of day HH:MM (IST), if it matters." },
+  states: {
+    type: "string",
+    description: `Comma-separated state codes for state-specific events (e.g. "KA" or "UP,PB"); omit for all-India. Codes: ${Object.entries(STATE_NAMES).map(([k, v]) => `${k}=${v}`).join(", ")}.`,
+  },
+  location: { type: "string" },
+  description: { type: "string" },
+  keywords: { type: "string", description: "Short search terms to find related news (defaults to the title)." },
+  link: { type: "string", description: "Official or reference URL." },
+  status: { type: "string", enum: ["confirmed", "tentative"], description: "tentative = expected but not officially announced." },
+  source: { type: "string", description: "Where the date comes from." },
+};
+
+const CALENDAR_TOOLS: Tool[] = [
+  {
+    name: "calendar_events",
+    description:
+      "The news calendar: festivals, national and state days, elections and Parliament, PM & leaders, economy (RBI, Budget, GDP), " +
+      "tech events, sports, movie releases, exams, weather/farming, courts, remembrance, Bengaluru & Karnataka. " +
+      "Events overlapping a date range, filtered by category, state or words. Each has an id for calendar_update/delete.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from: { type: "string", description: "YYYY-MM-DD (default today)." },
+        to: { type: "string", description: "YYYY-MM-DD (default 30 days after from)." },
+        categories: { type: "array", items: { type: "string", enum: CALENDAR_CATEGORIES.map((c) => c.key) } },
+        state: { type: "string", description: "State code: that state's events plus all-India ones." },
+        query: { type: "string", description: "Words that must appear in the title, description, keywords or location." },
+        status: { type: "string", enum: ["confirmed", "tentative"] },
+        limit: { type: "integer", description: "Default 100, max 500." },
+      },
+    },
+    async run(a) {
+      const from = DAY.test(a.from || "") ? a.from : istToday();
+      const to = DAY.test(a.to || "") ? a.to : addDays(from, 30);
+      const items = await listEvents({ from, to, categories: Array.isArray(a.categories) ? a.categories : undefined, state: a.state, query: a.query, status: a.status });
+      return { from, to, total: items.length, events: items.slice(0, clampInt(a.limit, 100, 1, 500)) };
+    },
+  },
+  {
+    name: "calendar_add",
+    description: "Add an event to the news calendar (e.g. an announced election date, a film release, a summit). Returns the new event with its id.",
+    inputSchema: { type: "object", properties: eventProps, required: ["title", "category", "start"] },
+    writes: true,
+    async run(a) {
+      return { added: await addEvent(a) };
+    },
+  },
+  {
+    name: "calendar_update",
+    description: "Change a calendar event: pass its id and only the fields to change (e.g. new dates once announced, status confirmed).",
+    inputSchema: { type: "object", properties: { id: { type: "string" }, ...eventProps }, required: ["id"] },
+    writes: true,
+    async run(a) {
+      const { id, ...patch } = a;
+      return { updated: await updateEvent(String(id), patch) };
+    },
+  },
+  {
+    name: "calendar_delete",
+    description: "Remove an event from the news calendar by id (e.g. a duplicate or a cancelled event).",
+    inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
+    writes: true,
+    async run(a) {
+      const e = await getEvent(String(a.id));
+      if (!e) return { error: `No event with id ${a.id}` };
+      await deleteEvent(String(a.id));
+      return { deleted: e };
+    },
+  },
+];
+
+TOOLS.push(...CALENDAR_TOOLS);
 
 function findWatchlist(q: unknown) {
   const all = listWatchlists();

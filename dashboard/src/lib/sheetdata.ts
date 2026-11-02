@@ -463,3 +463,26 @@ export async function writeTitleEn(tab: string, articleId: string, titleEn: stri
   });
   return { saved: true };
 }
+
+// ---------------------------------------------------------------------------
+// Small generic tab access (the calendar, lib/calendar.ts). Works in both
+// modes: on the PC it uses SHEET_ID / GOOGLE_SERVICE_ACCOUNT_FILE from .env.local.
+// ---------------------------------------------------------------------------
+
+/** Rows of a tab range, e.g. sheetRead("_calendar", "A2:O"); [] if the tab doesn't exist. */
+export async function sheetRead(tab: string, a1: string): Promise<string[][]> {
+  if (!(await tabs()).has(tab)) {
+    const fresh = await call("GET", "?fields=sheets.properties(title)");
+    if (!(fresh.sheets || []).some((s: any) => s.properties.title === tab)) return [];
+  }
+  const [values] = await read([range(tab, a1)]);
+  return values ?? [];
+}
+
+export async function sheetWrite(tab: string, a1: string, values: string[][]): Promise<void> {
+  await call("POST", "/values:batchUpdate", { valueInputOption: "RAW", data: [{ range: range(tab, a1), values }] });
+}
+
+export async function sheetAppend(tab: string, values: string[][]): Promise<void> {
+  await call("POST", `/values/${encodeURIComponent(range(tab, "A1"))}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, { values });
+}
