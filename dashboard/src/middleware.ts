@@ -8,7 +8,8 @@ export function middleware(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_DATA_SOURCE !== "sheet") return NextResponse.next();
   const { pathname } = request.nextUrl;
   if (pathname === "/saved" || pathname === "/muted") return NextResponse.redirect(new URL("/", request.url));
-  if (pathname.startsWith("/api/") && request.method !== "GET" && pathname !== "/api/translate") {
+  // Allowed writes: the Translate button, and the MCP server (POST is its protocol; its tools only read).
+  if (pathname.startsWith("/api/") && request.method !== "GET" && pathname !== "/api/translate" && pathname !== "/api/mcp") {
     return NextResponse.json({ error: "The online dashboard is read-only — make changes in the app on the PC." }, { status: 403 });
   }
   return NextResponse.next();
